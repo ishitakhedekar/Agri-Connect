@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Header from './components/Layout/Header';
+import Footer from './components/Layout/Footer';
 import Home from './components/Home/Home';
 import BrowseLands from './components/Lands/BrowseLands';
 import PostLand from './components/Lands/PostLand';
@@ -11,6 +12,7 @@ import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import Dashboard from './components/Dashboard/Dashboard';
 import Chat from './components/Chat/Chat';
+import Profile from './components/Auth/Profile';
 import './App.css';
 
 const theme = createTheme({
@@ -45,7 +47,9 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/chat/:userId" element={<Chat />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
+        <Footer />
       </Router>
     </ThemeProvider>
   );

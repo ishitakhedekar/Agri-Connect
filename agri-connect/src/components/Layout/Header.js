@@ -21,6 +21,9 @@ const Header = () => {
           <Button color="inherit" component={Link} to="/post-land">
             Post Land
           </Button>
+          <Button color="inherit" component={Link} to="/profile">
+            Profile
+          </Button>
           <Button color="inherit" component={Link} to="/login">
             Login
           </Button>
