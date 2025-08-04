@@ -1,24 +1,53 @@
-import logo from './logo.svg';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Header from './components/Layout/Header';
+import Home from './components/Home/Home';
+import BrowseLands from './components/Lands/BrowseLands';
+import PostLand from './components/Lands/PostLand';
+import LandDetails from './components/Lands/LandDetails';
+import Login from './components/Auth/Login';
+import Register from './components/Auth/Register';
+import Dashboard from './components/Dashboard/Dashboard';
+import Chat from './components/Chat/Chat';
 import './App.css';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#2e7d32',
+    },
+    secondary: {
+      main: '#66bb6a',
+    },
+    background: {
+      default: '#f5f5f5',
+    },
+  },
+  typography: {
+    fontFamily: 'Roboto, Arial, sans-serif',
+  },
+});
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Router>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/lands" element={<BrowseLands />} />
+          <Route path="/lands/:id" element={<LandDetails />} />
+          <Route path="/post-land" element={<PostLand />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/chat/:userId" element={<Chat />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 }
 
