@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { LandProvider } from './contexts/LandContext';
 import Header from './components/Layout/Header';
 import Footer from './components/Layout/Footer';
 import Home from './components/Home/Home';
@@ -36,21 +37,23 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/lands" element={<BrowseLands />} />
-          <Route path="/lands/:id" element={<LandDetails />} />
-          <Route path="/post-land" element={<PostLand />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/chat/:userId" element={<Chat />} />
-          <Route path="/profile" element={<Profile />} />
-        </Routes>
-        <Footer />
-      </Router>
+      <LandProvider>
+        <Router>
+          <Header />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/lands" element={<BrowseLands />} />
+            <Route path="/lands/:id" element={<LandDetails />} />
+            <Route path="/post-land" element={<PostLand />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/chat/:userId" element={<Chat />} />
+            <Route path="/profile" element={<Profile />} />
+          </Routes>
+          <Footer />
+        </Router>
+      </LandProvider>
     </ThemeProvider>
   );
 }

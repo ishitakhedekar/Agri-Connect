@@ -19,9 +19,10 @@ import {
 import { Link } from 'react-router-dom';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AgricultureIcon from '@mui/icons-material/Agriculture';
+import { useLands } from '../../contexts/LandContext';
 
 const BrowseLands = () => {
-  const [lands, setLands] = useState([]);
+  const { lands: postedLands } = useLands();
   const [filteredLands, setFilteredLands] = useState([]);
   const [filters, setFilters] = useState({
     location: '',
@@ -30,44 +31,10 @@ const BrowseLands = () => {
     maxArea: '',
   });
 
-  // Sample data - replace with API calls
-  const sampleLands = [
-    {
-      id: 1,
-      title: 'Fertile Land in Punjab',
-      location: 'Ludhiana, Punjab',
-      area: 5.5,
-      soilType: 'Alluvial',
-      description: 'Rich fertile land perfect for wheat and rice cultivation',
-      image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400',
-      status: 'available',
-    },
-    {
-      id: 2,
-      title: 'Organic Farm Land',
-      location: 'Nashik, Maharashtra',
-      area: 3.2,
-      soilType: 'Black',
-      description: 'Ideal for grape cultivation and organic farming',
-      image: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400',
-      status: 'available',
-    },
-    {
-      id: 3,
-      title: 'Hillside Agricultural Land',
-      location: 'Coorg, Karnataka',
-      area: 8.0,
-      soilType: 'Laterite',
-      description: 'Perfect for coffee and spice plantation',
-      image: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=400',
-      status: 'available',
-    },
-  ];
-
   useEffect(() => {
-    setLands(sampleLands);
-    setFilteredLands(sampleLands);
-  }, []);
+    // Only use posted lands from context
+    setFilteredLands(postedLands);
+  }, [postedLands]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -75,7 +42,7 @@ const BrowseLands = () => {
   };
 
   const applyFilters = () => {
-    let filtered = lands;
+    let filtered = [...postedLands];
     
     if (filters.location) {
       filtered = filtered.filter(land => 
