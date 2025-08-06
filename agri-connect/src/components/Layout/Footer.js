@@ -35,6 +35,9 @@ const Footer = () => {
             <Link href="/post-land" color="inherit" display="block" sx={{ mb: 1 }}>
               Post Land
             </Link>
+            <Link href="/about" color="inherit" display="block" sx={{ mb: 1 }}>
+              About Us
+            </Link>
           </Grid>
           <Grid item xs={12} sm={4}>
             <Typography variant="h6" gutterBottom>

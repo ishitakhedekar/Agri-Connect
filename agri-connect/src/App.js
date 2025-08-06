@@ -14,6 +14,7 @@ import Register from './components/Auth/Register';
 import Dashboard from './components/Dashboard/Dashboard';
 import Chat from './components/Chat/Chat';
 import Profile from './components/Auth/Profile';
+import AboutUs from './components/About/AboutUs';
 import './App.css';
 
 const theme = createTheme({
@@ -50,6 +51,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/chat/:userId" element={<Chat />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/about" element={<AboutUs />} />
           </Routes>
           <Footer />
         </Router>
