@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLands } from '../../contexts/LandContext';
 import {
   Container,
   Typography,
@@ -15,6 +16,7 @@ import {
 } from '@mui/material';
 
 const PostLand = () => {
+  const { addLand } = useLands();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -87,8 +89,8 @@ const PostLand = () => {
     setLoading(true);
     
     try {
-      // Simulate API call - replace with actual API endpoint
-      console.log('Submitting land data:', formData);
+      // Add the new land to the context
+      addLand(formData);
       
       // Reset form on success
       setFormData({
