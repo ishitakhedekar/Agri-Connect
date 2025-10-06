@@ -34,21 +34,37 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (formData.password !== formData.confirmPassword) {
-    setError('Passwords do not match');
-    return;
-  }
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
 
-  try {
-    const { data } = await axios.post(`${API_BASE_URL}/users/register`, formData);
-    localStorage.setItem('user', JSON.stringify(data));
-    navigate('/dashboard');
-  } catch (err) {
-    console.error(err);
-    setError(err.response?.data?.message || 'Registration failed');
-  }
+    // ✨ **FIX: Create a payload with backend-compatible field names**
+    const payload = {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      role: formData.role,
+      phonenumber: formData.phone, // Changed from 'phone'
+      address: formData.location,   // Changed from 'location'
+    };
+
+    try {
+      // Send the corrected payload instead of the whole formData
+      const { data } = await axios.post(`${API_BASE_URL}/users/register`, payload);
+      
+      // If the backend returns a token (see improved controller below), log the user in
+      if (data.token) {
+        localStorage.setItem('user', JSON.stringify(data));
+      }
+      
+      navigate('/dashboard');
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || 'Registration failed');
+    }
   };
 
 
@@ -70,6 +86,7 @@ const Register = () => {
           {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
           
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            {/* --- No changes are needed in the JSX below --- */}
             <TextField
               margin="normal"
               required
@@ -129,6 +146,7 @@ const Register = () => {
             </FormControl>
             <TextField
               margin="normal"
+              required // Making these required to match backend validation
               fullWidth
               name="phone"
               label="Phone Number"
@@ -138,6 +156,7 @@ const Register = () => {
             />
             <TextField
               margin="normal"
+              required // Making these required to match backend validation
               fullWidth
               name="location"
               label="Location"
