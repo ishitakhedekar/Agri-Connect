@@ -22,7 +22,8 @@ const PostLand = () => {
     description: '',
     location: '',
     area: '',
-    price: '',
+    leaseDuration: '',      // Added
+    yieldDistribution: '',  // Added
     landType: '',
     contactName: '',
     contactPhone: '',
@@ -33,6 +34,7 @@ const PostLand = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [postError, setPostError] = useState('');
 
   const landTypes = [
     'Agricultural',
@@ -51,12 +53,8 @@ const PostLand = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
+      setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
@@ -67,7 +65,8 @@ const PostLand = () => {
     if (!formData.description.trim()) newErrors.description = 'Description is required';
     if (!formData.location.trim()) newErrors.location = 'Location is required';
     if (!formData.area || formData.area <= 0) newErrors.area = 'Valid area is required';
-    if (!formData.price || formData.price <= 0) newErrors.price = 'Valid price is required';
+    if (!formData.leaseDuration.trim()) newErrors.leaseDuration = 'Lease duration is required';
+    if (!formData.yieldDistribution.trim()) newErrors.yieldDistribution = 'Yield distribution is required';
     if (!formData.landType) newErrors.landType = 'Land type is required';
     if (!formData.contactName.trim()) newErrors.contactName = 'Contact name is required';
     if (!formData.contactPhone.trim()) newErrors.contactPhone = 'Contact phone is required';
@@ -82,58 +81,78 @@ const PostLand = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  setLoading(true);
+    if (!validateForm()) {
+      return;
+    }
 
-  const user = JSON.parse(localStorage.getItem('user'));
-  const token = user?.token;
+    setLoading(true);
+    setSuccess(false);
+    setPostError('');
 
-  try {
-    await axios.post(
-      `${API_BASE_URL}/lands`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = user?.token;
 
-    setSuccess(true);
-    setFormData({
-      title: '',
-      description: '',
-      location: '',
-      area: '',
-      soilType: '',
-      imageUrl: '',
-      contactName: '',
-      contactNumber: ''
-    });
-  } catch (err) {
-    console.error(err);
-    alert('Failed to post land');
-  } finally {
-    setLoading(false);
-  }
-};
+    if (!token) {
+        setPostError('You must be logged in to post.');
+        setLoading(false);
+        return;
+    }
+
+    try {
+      await axios.post(
+        `${API_BASE_URL}/lands`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setSuccess(true);
+      setFormData({
+        title: '',
+        description: '',
+        location: '',
+        area: '',
+        leaseDuration: '',
+        yieldDistribution: '',
+        landType: '',
+        contactName: '',
+        contactPhone: '',
+        contactEmail: '',
+        imageUrl: ''
+      });
+    } catch (err) {
+      console.error(err);
+      setPostError(err.response?.data?.message || 'Failed to post land. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Typography variant="h4" gutterBottom align="center">
-        Post New Land
+        Post New Land for Lease
       </Typography>
       <Typography variant="body1" align="center" color="text.secondary" sx={{ mb: 4 }}>
-        Fill in the details below to list your land for sale or lease
+        Fill in the details below to list your land for lease
       </Typography>
 
       <Paper elevation={3} sx={{ p: 4, maxWidth: 800, mx: 'auto' }}>
         {success && (
           <Alert severity="success" sx={{ mb: 3 }}>
-            Land posted successfully! Your listing will be reviewed and published shortly.
+            Land posted successfully!
           </Alert>
+        )}
+        {postError && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+                {postError}
+            </Alert>
         )}
 
         <Box component="form" onSubmit={handleSubmit} noValidate>
@@ -204,7 +223,7 @@ const PostLand = () => {
               />
             </Grid>
 
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 type="number"
@@ -217,17 +236,32 @@ const PostLand = () => {
                 required
               />
             </Grid>
-
-            <Grid item xs={12} sm={3}>
+            
+            {/* LEASE DURATION & YIELD DISTRIBUTION FIELDS */}
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                type="number"
-                label="Price ($)"
-                name="price"
-                value={formData.price}
+                label="Lease Duration"
+                name="leaseDuration"
+                value={formData.leaseDuration}
                 onChange={handleChange}
-                error={!!errors.price}
-                helperText={errors.price}
+                error={!!errors.leaseDuration}
+                helperText={errors.leaseDuration}
+                placeholder="e.g., 5 years, 3 seasons"
+                required
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Yield Distribution"
+                name="yieldDistribution"
+                value={formData.yieldDistribution}
+                onChange={handleChange}
+                error={!!errors.yieldDistribution}
+                helperText={errors.yieldDistribution || "Farmer/Owner split (e.g., 60/40)"}
+                placeholder="e.g., 60/40"
                 required
               />
             </Grid>
