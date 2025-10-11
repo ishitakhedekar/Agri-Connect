@@ -54,12 +54,11 @@ const Register = () => {
     try {
       // Send the corrected payload instead of the whole formData
       const { data } = await axios.post(`${API_BASE_URL}/users/register`, payload);
-      
-      // If the backend returns a token (see improved controller below), log the user in
-      if (data.token) {
-        localStorage.setItem('user', JSON.stringify(data));
-      }
-      
+
+      const userData = data.user || data;
+      const fullUser = { ...payload, password: undefined, ...userData, token: data.token };
+      localStorage.setItem('user', JSON.stringify(fullUser));
+      window.dispatchEvent(new Event('userUpdated'));
       navigate('/dashboard');
     } catch (err) {
       console.error(err);

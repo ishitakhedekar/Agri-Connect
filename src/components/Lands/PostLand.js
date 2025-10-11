@@ -15,8 +15,10 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { API_BASE_URL } from '../../api';
+import { useLands } from '../../contexts/LandContext';
 
 const PostLand = () => {
+  const { refreshLands } = useLands();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -25,6 +27,7 @@ const PostLand = () => {
     leaseDuration: '',      // Added
     yieldDistribution: '',  // Added
     landType: '',
+    soilType: '',
     contactName: '',
     contactPhone: '',
     contactEmail: '',
@@ -45,6 +48,17 @@ const PostLand = () => {
     'Farm Land',
     'Orchard',
     'Pasture Land'
+  ];
+
+  const soilTypes = [
+    'Clay',
+    'Sandy',
+    'Loam',
+    'Silt',
+    'Peat',
+    'Chalk',
+    'Clay Loam',
+    'Sandy Loam'
   ];
 
   const handleChange = (e) => {
@@ -68,6 +82,7 @@ const PostLand = () => {
     if (!formData.leaseDuration.trim()) newErrors.leaseDuration = 'Lease duration is required';
     if (!formData.yieldDistribution.trim()) newErrors.yieldDistribution = 'Yield distribution is required';
     if (!formData.landType) newErrors.landType = 'Land type is required';
+    if (!formData.soilType) newErrors.soilType = 'Soil type is required';
     if (!formData.contactName.trim()) newErrors.contactName = 'Contact name is required';
     if (!formData.contactPhone.trim()) newErrors.contactPhone = 'Contact phone is required';
     if (!formData.contactEmail.trim()) {
@@ -120,11 +135,13 @@ const PostLand = () => {
         leaseDuration: '',
         yieldDistribution: '',
         landType: '',
+        soilType: '',
         contactName: '',
         contactPhone: '',
         contactEmail: '',
         imageUrl: ''
       });
+      await refreshLands();
     } catch (err) {
       console.error(err);
       setPostError(err.response?.data?.message || 'Failed to post land. Please try again.');
@@ -187,6 +204,22 @@ const PostLand = () => {
                   label="Land Type"
                 >
                   {landTypes.map(type => (
+                    <MenuItem key={type} value={type}>{type}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth error={!!errors.soilType} required>
+                <InputLabel>Soil Type</InputLabel>
+                <Select
+                  name="soilType"
+                  value={formData.soilType}
+                  onChange={handleChange}
+                  label="Soil Type"
+                >
+                  {soilTypes.map(type => (
                     <MenuItem key={type} value={type}>{type}</MenuItem>
                   ))}
                 </Select>

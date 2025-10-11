@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
+import { API_BASE_URL } from '../api';
 
 const LandContext = createContext();
 
@@ -21,6 +23,32 @@ export const LandProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('lands', JSON.stringify(lands));
   }, [lands]);
+
+  const fetchLands = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const token = user?.token;
+
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      const { data } = await axios.get(`${API_BASE_URL}/lands`, config);
+      setLands(data);
+    } catch (err) {
+      console.error('Failed to fetch lands:', err);
+      // Fallback to localStorage
+      const savedLands = localStorage.getItem('lands');
+      if (savedLands) {
+        setLands(JSON.parse(savedLands));
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchLands();
+  }, []);
+
+  const refreshLands = () => {
+    return fetchLands();
+  };
 
   const addLand = (newLand) => {
     const landWithId = {
@@ -50,6 +78,7 @@ export const LandProvider = ({ children }) => {
     addLand,
     updateLand,
     deleteLand,
+    refreshLands,
   };
 
   return <LandContext.Provider value={value}>{children}</LandContext.Provider>;

@@ -34,7 +34,10 @@ const Login = () => {
 
   try {
     const { data } = await axios.post(`${API_BASE_URL}/users/login`, formData);
-    localStorage.setItem('user', JSON.stringify(data));
+    const userData = data.user || data;
+    const fullUser = { ...userData, email: formData.email, token: data.token };
+    localStorage.setItem('user', JSON.stringify(fullUser));
+    window.dispatchEvent(new Event('userUpdated'));
     navigate('/dashboard');
   } catch (err) {
     setError(err.response?.data?.message || 'Login failed');

@@ -13,6 +13,8 @@ import {
   Divider,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { API_BASE_URL } from '../../api';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -27,20 +29,47 @@ const Profile = () => {
   });
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      setUser(userData);
-      setFormData({
-        name: userData.name || '',
-        email: userData.email || '',
-        phone: userData.phone || '',
-        address: userData.address || '',
-        bio: userData.bio || '',
-      });
-    } else {
-      navigate('/login');
-    }
+    const loadUser = async () => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+        setFormData({
+          name: userData.name || '',
+          email: userData.email || '',
+          // phone: userData.phonenumber || userData.phone || '',
+          phone:userData.phone || '',
+          address: userData.address || '',
+          bio: userData.bio || '',
+        });
+
+        // Fetch full user from backend
+        if (userData.token) {
+          try {
+            const { data: fullUserData } = await axios.get(`${API_BASE_URL}/users/profile`, {
+              headers: { Authorization: `Bearer ${userData.token}` }
+            });
+            const fullUser = { ...userData, ...fullUserData };
+            setUser(fullUser);
+            setFormData({
+              name: fullUser.name || '',
+              email: fullUser.email || '',
+              phone: fullUser.phonenumber || fullUser.phone || '',
+              address: fullUser.address || '',
+              bio: fullUser.bio || '',
+            });
+            localStorage.setItem('user', JSON.stringify(fullUser));
+          } catch (err) {
+            console.error('Failed to fetch profile:', err);
+            // Fall back to localStorage data
+          }
+        }
+      } else {
+        navigate('/login');
+      }
+    };
+
+    loadUser();
   }, [navigate]);
 
   const handleInputChange = (e) => {
@@ -61,7 +90,7 @@ const Profile = () => {
     setFormData({
       name: user?.name || '',
       email: user?.email || '',
-      phone: user?.phone || '',
+      phone: user?.phonenumber || user?.phone || '',
       address: user?.address || '',
       bio: user?.bio || '',
     });
@@ -185,7 +214,7 @@ const Profile = () => {
                         <Typography variant="subtitle2" color="text.secondary">
                           Phone
                         </Typography>
-                        <Typography variant="body1">{user.phone || 'Not provided'}</Typography>
+                        <Typography variant="body1">{user.phonenumber || user.phone || 'Not provided'}</Typography>
                       </Grid>
                       <Grid item xs={12} sm={6}>
                         <Typography variant="subtitle2" color="text.secondary">

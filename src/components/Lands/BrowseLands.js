@@ -20,6 +20,10 @@ import { Link } from 'react-router-dom';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AgricultureIcon from '@mui/icons-material/Agriculture';
 import { useLands } from '../../contexts/LandContext';
+import axios from 'axios';
+import{API_BASE_URL}from'../../api';
+
+
 
 const BrowseLands = () => {
   const { lands: postedLands } = useLands();

@@ -37,15 +37,13 @@ const Dashboard = () => {
     );
   }
   
-  const initial = user?.name ? user.name.charAt(0).toUpperCase() : '';
-  
   return (
     <Container sx={{ mt: 4 }}>
       <Typography variant="h4" gutterBottom>
         Welcome, {user.name || user.email}
       </Typography>
       <Typography variant="h6" gutterBottom>
-        Role: {initial}
+        Role: {user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'N/A'}
       </Typography>
 
       <Grid container spacing={4} sx={{ mt: 2 }}>
@@ -136,4 +134,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
