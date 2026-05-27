@@ -1,70 +1,167 @@
-# Getting Started with Create React App
+# AgriConnect — Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+React frontend for the AgriConnect platform. Connects landowners with farmers through land listings, direct messaging, and role-based dashboards.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Tech Stack
 
-### `npm start`
+| Layer | Technology |
+|---|---|
+| Framework | React 18 |
+| UI Library | Material UI (MUI) v5 |
+| Routing | React Router v6 |
+| HTTP Client | Axios |
+| Image Uploads | Cloudinary (unsigned preset) |
+| State | React Context API |
+| Storage | localStorage |
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Project Structure
 
-### `npm test`
+```
+src/
+├── components/
+│   ├── About/
+│   │   └── AboutUs.js
+│   ├── Auth/
+│   │   ├── Login.js
+│   │   ├── Register.js
+│   │   ├── Profile.js
+│   │   └── ProtectedRoute.js
+│   ├── Chat/
+│   │   └── Chat.js
+│   ├── Dashboard/
+│   │   └── Dashboard.js
+│   ├── Home/
+│   │   └── Home.js
+│   ├── Lands/
+│   │   ├── BrowseLands.js
+│   │   ├── LandDetails.js
+│   │   └── PostLand.js
+│   └── Layout/
+│       ├── Header.js
+│       └── Footer.js
+├── contexts/
+│   └── LandContext.js        # Global land state
+├── api.js                    # API base URL config
+├── App.js                    # Routes and theme
+├── index.js                  # Entry point
+└── index.css                 # Global styles
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## Getting Started
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Prerequisites
+- Node.js v18+
+- AgriConnect backend running on `http://localhost:5000`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Installation
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+# Install dependencies
+npm install
+```
 
-### `npm run eject`
+### Environment Variables
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Create a `.env` file in the root of the frontend directory:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```env
+REACT_APP_API_URL=http://localhost:5000/api
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Running the App
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+# Development
+npm start
+```
 
-## Learn More
+App runs on `http://localhost:3000`
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Pages & Routes
 
-### Code Splitting
+| Route | Component | Auth | Role |
+|---|---|---|---|
+| `/` | Home | No | Any |
+| `/about` | AboutUs | No | Any |
+| `/login` | Login | No | Any |
+| `/register` | Register | No | Any |
+| `/dashboard` | Dashboard | Yes | Any |
+| `/profile` | Profile | Yes | Any |
+| `/lands` | BrowseLands | No | Any |
+| `/lands/:id` | LandDetails | No | Any |
+| `/post-land` | PostLand | Yes | Landowner only |
+| `/chat` | Chat (inbox) | Yes | Any |
+| `/chat/:userId` | Chat (conversation) | Yes | Any |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+## Key Features
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Role-Based Access
+- Users register as either **Farmer** or **Landowner**
+- Role is stored in JWT and verified on both frontend and backend
+- `ProtectedRoute` component blocks access based on auth and role
+- UI adapts throughout — nav links, dashboard content, and CTAs differ per role
 
-### Making a Progressive Web App
+### Land Listings
+- Landowners post land with photos (uploaded to Cloudinary), soil type, area, lease terms, and yield distribution
+- Farmers browse and filter listings by location, land type, and area
+- Each listing shows a status badge — **Available** or **Occupied**
+- Landowners can toggle status from the land detail page
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Image Uploads
+Images are uploaded directly from the browser to Cloudinary using an unsigned upload preset.
 
-### Advanced Configuration
+```
+Cloud Name: djfk9eavu
+Upload Preset: Agri-App
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+To change the Cloudinary config, update these constants in `PostLand.js`:
+```js
+const CLOUDINARY_CLOUD_NAME = 'djfk9eavu';
+const CLOUDINARY_UPLOAD_PRESET = 'Agri-App';
+```
 
-### Deployment
+### Messaging
+- Farmers contact landowners directly from a land listing
+- Full inbox view shows all conversations with last message preview
+- Conversation view polls every 4 seconds for new messages
+- Send messages with Enter key or the Send button
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### Session Management
+User sessions are stored in `sessionStorage` — the session clears automatically when the browser tab is closed.
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Theme
+
+The app uses a consistent green agricultural theme throughout:
+
+| Token | Value |
+|---|---|
+| Primary | `#2e7d32` |
+| Secondary | `#66bb6a` |
+| Dark Green | `#1b5e20` |
+| Light Green | `#e8f5e9` |
+| Accent | `#a5d6a7` |
+| Background | `#f5f5f5` |
+
+Font: Roboto (body), Georgia serif (headings and brand name)
+
+---
+
+## Cloudinary Setup
+
+1. Create a free account at [cloudinary.com](https://cloudinary.com)
+2. Go to **Settings → Upload → Upload Presets**
+3. Create an **unsigned** preset
+4. Copy the preset name into `PostLand.js`
